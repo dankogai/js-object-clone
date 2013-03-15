@@ -3,7 +3,7 @@
 object-clone.js
 ===============
 
-Object.clone() with deep cloning support
+Deep cloning and comparison for ES5
 
 SYNOPSIS
 --------

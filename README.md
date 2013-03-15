@@ -53,7 +53,7 @@ You can clone custom objects so long as its constructor is written in JavaScript
 
 ````javascript
 var Point = function(x, y) {
-if (!(this instanceof Point)) return new Point(x, y);
+    if (!(this instanceof Point)) return new Point(x, y);
     this.x = x*1;
     this.y = y*1;
 };

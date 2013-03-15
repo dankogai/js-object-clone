@@ -1,6 +1,6 @@
 {
   "name": "js-object-clone",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deep cloning and comparison for ES5",
   "main": "object-clone.js",
   "directories": {

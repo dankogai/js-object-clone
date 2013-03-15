@@ -1,5 +1,5 @@
 /*
- * $Id: object-clone.js,v 0.10 2013/03/15 09:46:49 dankogai Exp dankogai $
+ * $Id: object-clone.js,v 0.11 2013/03/15 11:29:32 dankogai Exp dankogai $
  *
  *  Licensed under the MIT license.
  *  http://www.opensource.org/licenses/mit-license.php

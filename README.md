@@ -117,12 +117,18 @@ With ES5 you can add hidden, immutable properties like `.__id__` via `Object.def
 
 SEE ALSO
 --------
+### eval(uneval(obj))
 
-### _.clone()
+Available only on firefox.  Handles circular references.
+
+### _.clone() and _.cloneDeep()
 
 Lacks deep cloning support and ES5 support.  One of the reason why I resorted to writing this.
 
+Lo-dash has _.cloneDeep() yet still lacks ES5 suppport.
+
 + http://underscorejs.org/#clone
++ http://lodash.com/docs#cloneDeep
 
 ### The structured clone algorithm
 

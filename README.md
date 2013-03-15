@@ -14,14 +14,14 @@ var log = function(){ console.log.apply(console, [].slice.call(arguments)) };
 ````javascript
 var src = { name: 'dankogai', lang: ['perl'] };
 var dst = Object.clone(src);    // shallow copy
-log(Object.is(src, dst));       // false
-log(Object.equals(src, dst));   // true
+log( Object.is(src, dst));       // false
+log( Object.equals(src, dst) );   // true
 dst.lang.push('javascript');
-log(JSON.stringify(dst.lang));  // ["perl","javascript"] because dst is shallow-copied
+log(JSON.stringify(dst.lang) );  // ["perl","javascript"] because dst is shallow-copied
 dst = Object.clone(src, true);  // deep copy
 dst.lang = dst.lang.reverse();
-log(JSON.stringify(src.lang));  // ["perl","javascript"]
-log(JSON.stringify(dst.lang));  // ["javascript","perl"]
+log( JSON.stringify(src.lang) );  // ["perl","javascript"]
+log( JSON.stringify(dst.lang) );  // ["javascript","perl"]
 ````
 
 REQUIREMENT
@@ -67,8 +67,8 @@ Point.prototype = {
 };
 var src = Point(3,4);
 var dst = Object.clone(src, true);
-log(Object.equals(src, dst));   // false
-log(dst.distance(Point(0,0));   // 5
+log( Object.equals(src, dst)  );   // false
+log( dst.distance(Point(0,0)) );   // 5
 ````
 
 If the type of _obj_ is unsupported, it throws `TypeError`:

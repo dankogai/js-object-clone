@@ -15,9 +15,9 @@ var log = function(){ console.log.apply(console, [].slice.call(arguments)) };
 var src = { name: 'dankogai', lang: ['perl'] };
 var dst = Object.clone(src);    // shallow copy
 log(Object.is(src, dst));       // false
-log(Object.equals(src, dst));   // true;
+log(Object.equals(src, dst));   // true
 dst.lang.push('javascript');
-log(JSON.stringify(dst.lang));  // ["perl","javascript"] because dst is shallow copied.
+log(JSON.stringify(dst.lang));  // ["perl","javascript"] because dst is shallow-copied
 dst = Object.clone(src, true);  // deep copy
 dst.lang = dst.lang.reverse();
 log(JSON.stringify(src.lang));  // ["perl","javascript"]
@@ -34,38 +34,71 @@ DESCRIPTION
 
 This script installs following functions to *Object*
 
-### Object.clone(`obj`, `deep`)
+### Object.clone( _obj_ , _deep_ )
 
-Clones `obj`.  When `deep` is `true`, it attempts to deep clone `obj`.
+Clones the object _obj_.  When _deep_ is `true`, it attempts to deep clone _obj_.
 
 Unlike many other implementations of object cloners,  This one:
 
-+ can deep clone
++ can deep clone upon request
 + copies the ES5 descriptor of every property that `Object.getOwnPropertyDescriptor()` returns
 + copies the restriction of the object that the following functions cast upon:
  + `Object.preventExtensions()`
  + `Object.seal()`
  + `Object.freeze()`
 
-If the type of `obj` is unsupported, it throws `TypeError`:
+You can copy custom objects so long as its constructor is written in JavaScript:
+
+````javascript
+var Point = function(x, y) {
+    if (!(this instanceof Point)) return new Point(x, y);
+        this.x = x*1;
+        this.y = y*1;
+    };
+Point.prototype = {
+    distance: function(pt) {
+        if (!pt) pt = Point(0,0);
+        var dx = this.x - pt.x;
+        var dy = this.y - pt.y;
+        return Math.sqrt(dx*dx + dy*dy);
+    }
+};
+var src = Point(3,4);
+var dst = Object.clone(src, true);
+log(Object.equals(src, dst));   // false
+log(dst.distance(Point(0,0));   // 5
+````
+
+If the type of _obj_ is unsupported, it throws `TypeError`:
 
 ````javascript
 dst = Object.clone(new Error);  //  [object Error] unsupported
 ````
+#### Why DOM Elements are not supported
 
-### Object.equals(`objX`, `objY`)
+Note DOM Elements are not supported.  It already has `.cloneNode` so use it.
 
-Compares the _value_ of each property in `objX` and `objY` and returns `true` iff all properties are equal, otherwise `false`.
+cf. https://developer.mozilla.org/en-US/docs/DOM/Node.cloneNode
 
-Like `Object.clone`, `Object.equals`:
+It is rather trivial to add support for that since all you have to do is delegate it to _obj_.cloneNode( _deep_ ) (as a matter of fact my early code did support that).  But the author decided to drop that since `uneval()` of Firefox does not support that.
+
+### Object.equals( _objX_, _objY_ )
+
+Compares the _value_ of each property in _objX_ and _objY_ and returns `true` iff all properties are equal, otherwise `false`.
+
+Like `Object.clone()`, `Object.equals()`:
 
 + compares ES5 descriptor
 + compares restriction
+
+### `Object.is()` and `Object.isnt()`
 
 The following ES6 functions are also defined unless predefined (like Chrome 25):
 
 + Object.is()
 + Object.isnt()
+
+See http://wiki.ecmascript.org/doku.php?id=harmony:egal for details.
 
 BUGS
 ----

@@ -155,4 +155,22 @@ describe('Object.clone', function () {
         err = e;
     }
     it('Object.clone(new Error)', ok(err));
+    // custom object
+    var Point = function(x, y) {
+        if (!(this instanceof Point)) return new Point(x, y);
+        this.x = x*1;
+        this.y = y*1;
+    };
+    Point.prototype = {
+        distance: function(pt) {
+            if (!pt) pt = Point(0,0);
+            var dx = this.x - pt.x;
+            var dy = this.y - pt.y;
+            return Math.sqrt(dx*dx + dy*dy);
+        }
+    };
+    src = Point(3,4);
+    dst = Object.clone(src, true);
+    it ('Object.clone() // custom object', ok(Object.isnt(src, dst)));
+    it ('Object.clone() // custom object', eq(dst.distance(Point(0,0)), 5));
 });

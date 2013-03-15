@@ -4,16 +4,12 @@
  *  Licensed under the MIT license.
  *  http://www.opensource.org/licenses/mit-license.php
  *
- *  References:
- *    http://es5.github.com/
- *    http://wiki.ecmascript.org/doku.php?id=harmony:proposals
- *    https://github.com/paulmillr/es6-shim/
  */
 
 (function(global) {
     'use strict';
     if (!Object.freeze || typeof Object.freeze !== 'function') {
-        throw Error('ES5 unsupported');
+        throw Error('ES5 support required');
     }
     // from ES5
     var create = Object.create,
@@ -125,7 +121,7 @@
         case '[object Boolean]':
             return ''+x === ''+y;
         default:
-            throw TypeError(sx + ' unsupported');
+            throw TypeError(sx + ' not supported');
         }
     };
     function clone(src, deep) {
@@ -153,7 +149,7 @@
         case '[object Boolean]':
             return deep ? new src.constructor(src.valueOf()) : src;
         default:
-            throw TypeError(sig + ' unsupported');
+            throw TypeError(sig + ' is not supported');
         }
     };
     // Object

@@ -55,7 +55,9 @@ dst = Object.clone(new Error);  //  [object Error] unsupported
 
 ### Object.equals(`objX`, `objY`)
 
-Compares the _value_ of each properties of `objX` and `objY` and returns true iff all properties are equal.  Like `Object.clone`, `Object.equals`:
+Compares the _value_ of each property in `objX` and `objY` and returns `true` iff all properties are equal, otherwise `false`.
+
+Like `Object.clone`, `Object.equals`:
 
 + compares ES5 descriptor
 + compares restriction

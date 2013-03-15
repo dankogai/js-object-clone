@@ -1,0 +1,27 @@
+{
+  "name": "js-object-clone",
+  "version": "0.0.1",
+  "description": "Object.clone() with deep cloning support",
+  "main": "object-clone.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+      "mocha": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dankogai/js-object-clone.git"
+  },
+  "keywords": [
+    "clone",
+    "ES6"
+  ],
+  "author": "Dan Kogai",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "2568787076c4304c6ca6aec6618b8d3187991ba5"
+}

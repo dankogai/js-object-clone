@@ -67,7 +67,8 @@ Point.prototype = {
 };
 var src = Point(3,4);
 var dst = Object.clone(src, true);
-log( Object.equals(src, dst)  );   // false
+log( src === dst              );   // false
+log( Object.equals(src, dst)  );   // true
 log( dst.distance(Point(0,0)) );   // 5
 ````
 

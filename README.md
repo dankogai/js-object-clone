@@ -47,7 +47,9 @@ Unlike many other implementations of object cloners,  This one:
  + `Object.seal()`
  + `Object.freeze()`
 
-You can copy custom objects so long as its constructor is written in JavaScript:
+#### Custom Objects
+
+You can clone custom objects so long as its constructor is written in JavaScript:
 
 ````javascript
 var Point = function(x, y) {

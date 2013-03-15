@@ -114,3 +114,19 @@ It is not impossible to handle circular references in JavaScript since you can c
 [Map and Set of ES6]: http://wiki.ecmascript.org/doku.php?id=harmony:simple_maps_and_sets
 
 With ES5 you can add hidden, immutable properties like `.__id__` via `Object.defineProperty` but mutating objects for that is rude if not unforgivable.
+
+SEE ALSO
+--------
+
+### _.clone()
+
+Lacks deep cloning support and ES5 support.  One of the reason why I resorted to writing this.
+
++ http://underscorejs.org/#clone
+
+### The structured clone algorithm
+
+Roughly the same but Blob, File and other user-agent specific objects are not yet supported.
+
++ https://developer.mozilla.org/en-US/docs/DOM/The_structured_clone_algorithm
++ http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#safe-passing-of-structured-data

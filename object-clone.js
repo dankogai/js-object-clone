@@ -143,7 +143,6 @@
         switch (sig) {
         case '[object Array]':
         case '[object Object]':
-            var dst = isArray(src) ? [] : create(getPrototypeOf(src));
             if (deep && HASWEAKMAP) {
                 if (!wm) {
                     wm = WeakMap();
@@ -155,11 +154,18 @@
                     wm.set(src, true);
                 }
             };
+            var isarray = isArray(src);
+            var dst = isarray ? [] : create(getPrototypeOf(src));
             getOwnPropertyNames(src).forEach(function(k) {
-                var desc = getOwnPropertyDescriptor(src, k);
-                if (deep && 'value' in desc) 
-                    desc.value = clone(src[k], deep, wm);
-                defineProperty(dst, k, desc);
+                // Firefox forbids defineProperty(obj, 'length' desc)
+                if (isarray && k === 'length') {
+                    dst.length = src.length;
+                } else {
+                    var desc = getOwnPropertyDescriptor(src, k);
+                    if (deep && 'value' in desc) 
+                        desc.value = clone(src[k], deep, wm);
+                    defineProperty(dst, k, desc);
+                }
             });
             if (!isExtensible(src)) preventExtensions(dst);
             if (isSealed(src)) seal(dst);

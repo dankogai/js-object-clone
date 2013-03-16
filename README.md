@@ -103,18 +103,40 @@ The following ES6 functions are also defined unless predefined (like Chrome 25):
 
 See http://wiki.ecmascript.org/doku.php?id=harmony:egal for details.
 
+Circular Reference Support
+--------------------------
+
+As of 0.2.0, `Object.clone()` and `Object.equals()` handles
+circular references iff ES6 `WeakMap` is supported.  As of this writing,
+the following JS engines suppor that.
+
++ node.js with `--harmony`
++ Chrome with Experimental JavaScript enabled via `chrome://flags/`.
++ FireFox since 6.0
+
+cf.  https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/WeakMap
+
 BUGS
 ----
 
-Like `JSON`, `Object.clone()` and `Object.equals()` cannot handle circular references.
+Like `JSON`, `Object.clone()` and `Object.equals()` cannot handle
+circular references when WeakMap is not supported
 
-It is not impossible to handle circular references in JavaScript since you can check if the objects are identical via `===` operator. Yet it is very impractical without object ID like [object_id] of Ruby or `refaddr` of Perl.  Without object ID you have to linear search just to check if the object is already visited.  As a matter of fact the reference implementation of [Map and Set of ES6] resorts to linear search.
+It is not impossible to handle circular references in JavaScript since
+you can check if the objects are identical via `===` operator. Yet it
+is very impractical without object ID like [object_id] of Ruby or
+`refaddr` of Perl.  Without object ID you have to linear search just
+to check if the object is already visited.  As a matter of fact the
+reference implementation of [Map and Set of ES6] resorts to linear
+search.
 
 [object_id]:http://ruby-doc.org/core-2.0/Object.html#method-i-object_id
 [refaddr]:http://perldoc.perl.org/Scalar/Util.html
 [Map and Set of ES6]: http://wiki.ecmascript.org/doku.php?id=harmony:simple_maps_and_sets
 
-With ES5 you can add hidden, immutable properties like `.__id__` via `Object.defineProperty` but mutating objects for that is rude if not unforgivable.
+With ES5 you can add hidden, immutable properties like `.__id__` via
+`Object.defineProperty` but mutating objects for that is rude if not
+unforgivable.
 
 SEE ALSO
 --------

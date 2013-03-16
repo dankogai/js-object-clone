@@ -64,17 +64,15 @@
     var isPrimitive = function(o) { return o !== Object(o) };
     var isFunction = function(f) { return typeof(f) === 'function' };
     var signatureOf = function(o) { return toString.call(o) };
-    var hasProtoFunction = function(name) {
-        return function(e) {
-            return isPrimitive(o)              ? false
-                : !o[name]                     ? false
-                : hasOwnProperty.call(o, name) ? false
-                : !isFunction(o[name])         ? false
-                : true;
-        };
-    };
-    var canCloneNode = hasProtoFunction('cloneNode');
-    var canClone = hasProtoFunction('clone');
+    var HASWEAKMAP = (function() { // paranoia check
+        try {
+            var wm = WeakMap();
+            wm.set(wm, wm);
+            return wm.get(wm) === wm;
+        } catch(e) {
+            return false;
+        }
+    })();
     // exported
     function is (x, y) {
         return x === y
@@ -83,7 +81,7 @@
         : (x !== x && y !== y); // NaN
     };
     function isnt(x, y) { return !is(x, y) };
-    function equals(x, y) {
+    function equals(x, y, vx, vy) {
         if (isPrimitive(x)) return is(x, y);
         if (isFunction(x))  return is(x, y);
         // check deeply
@@ -96,17 +94,30 @@
             if (isExtensible(x) !== isExtensible(y)) return false;
             if (isSealed(x) !== isSealed(y)) return false;
             if (isFrozen(x) !== isFrozen(y)) return false;
+            if (HASWEAKMAP) {
+                if (!vx) {
+                    vx = WeakMap();
+                    vy = WeakMap();
+                } else {
+                    if (vx.has(x)) {
+                        // console.log('circular ref found');
+                        return vy.has(y);
+                    }
+                    vx.set(x, true);
+                    vy.set(y, true);
+                }
+            };
             px = getOwnPropertyNames(x),
             py = getOwnPropertyNames(y);
             if (px.length != py.length) return false;
             px.sort(); py.sort();
-            for (i = 0, l = px.length; i < l; ++i) {
+            iter: for (i = 0, l = px.length; i < l; ++i) {
                 kx = px[i];
                 ky = py[i];
                 if (kx !== ky) return false;
                 dx = getOwnPropertyDescriptor(x, ky);
                 dy = getOwnPropertyDescriptor(y, ky);
-                if (!equals(dx.value, dy.value)) return false
+                if (!equals(dx.value, dy.value, vx, vy)) return false
                 delete dx.value;
                 delete dy.value;
                 for (dk in dx) {
@@ -124,7 +135,7 @@
             throw TypeError(sx + ' not supported');
         }
     };
-    function clone(src, deep) {
+    function clone(src, deep, wm) {
         // primitives and functions
         if (isPrimitive(src)) return src;
         if (isFunction(src)) return src;
@@ -133,9 +144,21 @@
         case '[object Array]':
         case '[object Object]':
             var dst = isArray(src) ? [] : create(getPrototypeOf(src));
+            if (deep && HASWEAKMAP) {
+                if (!wm) {
+                    wm = WeakMap();
+                } else {
+                    if (wm.has(src)) {
+                        // console.log('circular ref found');
+                        return src;
+                    }
+                    wm.set(src, true);
+                }
+            };
             getOwnPropertyNames(src).forEach(function(k) {
                 var desc = getOwnPropertyDescriptor(src, k);
-                if (deep && 'value' in desc) desc.value = clone(src[k], deep);
+                if (deep && 'value' in desc) 
+                    desc.value = clone(src[k], deep, wm);
                 defineProperty(dst, k, desc);
             });
             if (!isExtensible(src)) preventExtensions(dst);

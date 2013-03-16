@@ -36,12 +36,14 @@ This script installs following functions to *Object*
 
 ### Object.clone( _obj_ , _deep_ )
 
-Clones the object _obj_.  When _deep_ is `true`, it attempts to deep clone _obj_.
+Clones the object _obj_.  When _deep_ is `true`, it attempts to deep
+clone _obj_.
 
 Unlike many other implementations of object cloners,  This one:
 
 + can deep clone upon request
-+ copies the ES5 descriptor of every property that `Object.getOwnPropertyDescriptor()` returns
++ copies the ES5 descriptor of every property that 
+`Object.getOwnPropertyDescriptor()` returns
 + copies the restriction of the object that the following functions cast upon:
  + `Object.preventExtensions()`
  + `Object.seal()`
@@ -49,7 +51,8 @@ Unlike many other implementations of object cloners,  This one:
 
 #### Custom Objects
 
-You can clone custom objects so long as its constructor is written in JavaScript:
+You can clone custom objects so long as its constructor is written in
+JavaScript:
 
 ````javascript
 var Point = function(x, y) {
@@ -83,11 +86,15 @@ Note DOM Elements are not supported.  It already has `.cloneNode` so use it.
 
 cf. https://developer.mozilla.org/en-US/docs/DOM/Node.cloneNode
 
-It is rather trivial to add support for that since all you have to do is delegate it to _obj_.cloneNode( _deep_ ) (as a matter of fact my early code did support that).  But the author decided to drop that since `uneval()` of Firefox does not support that.
+It is rather trivial to add support for that since all you have to do
+is delegate it to _obj_.cloneNode( _deep_ ) (as a matter of fact my
+early code did support that).  But the author decided to drop that
+since `uneval()` of Firefox does not support that.
 
 ### Object.equals( _objX_, _objY_ )
 
-Compares the _value_ of each property in _objX_ and _objY_ and returns `true` iff all properties are equal, otherwise `false`.
+Compares the _value_ of each property in _objX_ and _objY_ and returns
+`true` iff all properties are equal, otherwise `false`.
 
 Like `Object.clone()`, `Object.equals()`:
 
@@ -96,7 +103,8 @@ Like `Object.clone()`, `Object.equals()`:
 
 ### `Object.is()` and `Object.isnt()`
 
-The following ES6 functions are also defined unless predefined (like Chrome 25):
+The following ES6 functions are also defined unless predefined (like
+Chrome 25):
 
 + Object.is()
 + Object.isnt()
@@ -106,7 +114,7 @@ See http://wiki.ecmascript.org/doku.php?id=harmony:egal for details.
 Circular Reference Support
 --------------------------
 
-As of 0.2.0, `Object.clone()` and `Object.equals()` handles
+As of 0.2.0, `Object.clone()` and `Object.equals()` handle
 circular references iff ES6 `WeakMap` is supported.  As of this writing,
 the following JS engines suppor that.
 
@@ -146,7 +154,8 @@ Available only on firefox.  Handles circular references.
 
 ### _.clone() and _.cloneDeep()
 
-Lacks deep cloning support and ES5 support.  One of the reason why I resorted to writing this.
+Lacks deep cloning support and ES5 support.  One of the reason why I
+resorted to writing this.
 
 Lo-dash has _.cloneDeep() yet still lacks ES5 suppport.
 
@@ -155,7 +164,9 @@ Lo-dash has _.cloneDeep() yet still lacks ES5 suppport.
 
 ### The structured clone algorithm
 
-Roughly the same but Blob, File and other user-agent specific objects are not yet supported.
+Roughly the same but Blob, File and other user-agent specific objects
+are not yet supported.  Unfortunately it is used only internally to
+exchange data with WebWorkers.
 
 + https://developer.mozilla.org/en-US/docs/DOM/The_structured_clone_algorithm
 + http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#safe-passing-of-structured-data

@@ -32,7 +32,12 @@ EcmaScript 5 compliance.
 DESCRIPTION
 -----------
 
-This script installs following functions to *Object*
+This script installs following functions to *Object*.
+
+If the follwing ES6 functions are missing they are polyfilled.
+
++ `Object.is()`
++ `Object.isnt()`
 
 ### Object.clone( _obj_ , _deep_, _spec_ )
 
@@ -182,14 +187,6 @@ Like `[].filter`, the call back function take three arguments
 + `obj`
   The whole object
 
-### `Object.is()` and `Object.isnt()`
-
-The following ES6 functions are also defined unless predefined (like
-Chrome 25):
-
-+ Object.is()
-+ Object.isnt()
-
 See http://wiki.ecmascript.org/doku.php?id=harmony:egal for details.
 
 Circular Reference Support
@@ -209,7 +206,7 @@ BUGS
 ----
 
 Like `JSON`, `Object.clone()` and `Object.equals()` cannot handle
-circular references when WeakMap is not supported
+circular references unless WeakMap is supported.
 
 It is not impossible to handle circular references in JavaScript since
 you can check if the objects are identical via `===` operator. Yet it

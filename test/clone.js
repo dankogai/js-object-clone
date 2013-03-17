@@ -61,21 +61,39 @@ describe('Object.equals', function () {
         Object.defineProperty(x, '', dx);
         it('Object.equals() // different ' + d,
            eq(Object.equals(x, y), false));
+        it('Object.equals(...{descriptors:false}) // different ' + d,
+           eq(Object.equals(x, y, {descriptors:false}), true));
         dy = Object.getOwnPropertyDescriptor(y, '');
         dy[d] = false;
         Object.defineProperty(y, '', dy);
         it('Object.equals() // same ' + d, 
            eq(Object.equals(x, y), true));
     });
+    // extensibility
     x = {0:1}, y = {0:1};
     'preventExtensions seal freeze'.split(' ').forEach(function(method){
         Object[method](x);
-        it('Object.equals() // Object.' + method + '(x)',
+        it('Object.equals(x, y) // Object.' + method + '(x)',
            eq(Object.equals(x, y), false));
+        it('Object.equals(x, y, {extensibility:false}) // Object.'
+           + method + '(x)',
+           eq(Object.equals(x, y, {extensibility:false}), true));
         Object[method](y);
-        it('Object.equals() // Object.' + method + '(y)',
+        it('Object.equals(x, y) // Object.' + method + '(y)',
            eq(Object.equals(x, y), true));
     });
+    x = {0:1}, y = {0:1};
+    Object.defineProperty(x, '1', {value:1});
+    it('Object.equals(x, y, {enumerator:Object.keys}) // hidden prop.', 
+       ok(eq(Object.equals(x,y) === false
+             && Object.equals(x, y, {enumerator:Object.keys}) === true)));
+    // filter
+    x = {0:1, __id__:'x'}, y = {0:1,__id__:'y'};
+    it('Object.equals(x, y, {filter:function(){...}}) // hidden prop.', 
+       ok(eq(Object.equals(x,y) === false
+             && Object.equals(x, y, {
+                 filter:function(k){ return k.match(/^__/) }
+                 }) === true)));
 });
 
 describe('Object.clone', function () {
@@ -129,15 +147,25 @@ describe('Object.clone', function () {
         dsrc[d] = false;
         Object.defineProperty(src, '', dsrc);
         dst = Object.clone(src, true);
-        it('Object.clone() //' + d,
+        it('Object.clone(src, true) //' + d,
            ok(Object.equals(src, dst)));
+        dst = Object.clone(src, true, {descriptors:false});
+        it('Object.clone(src, true, {descriptors:false}) //' + d,
+           ok(Object.equals(src, dst) === false 
+              && Object.equals(src, dst, {descriptors:false}) === true));
     });
     src = {'':[{undefined:[{0:0}]}]};
+    // extensibility
     'preventExtensions seal freeze'.split(' ').forEach(function(method){
         Object[method](src);
         dst = Object.clone(src, true);
         it('Object.clone() // Object.' + method + '(src)',
            ok(Object.equals(src, dst)));
+        dst = Object.clone(src, true, {extensibility:false});
+        it('Object.clone(..., {extensibility:false}) // Object.' 
+           + method + '(src)',
+           ok(Object.equals(src, dst) === false 
+              && Object.equals(src, dst, {extensibility:false}) === true));
     });
     src = {'':[{undefined:[{0:0}]}]};
     Object.defineProperty(src, 'x', {
@@ -147,6 +175,21 @@ describe('Object.clone', function () {
     dst = Object.clone(src, true);
     dst.x = 'x';
     it ('Object.clone() clones getter and setter', eq(dst.x, 'x=x'));
+    src = {0:1};
+    // enumurator:false
+    Object.defineProperty(src, '1', {value:1});
+    dst = Object.clone(dst, src, {enumerator:Object.keys});
+    it('Object.clone(x, y, {enumerator:Object.keys}) // hidden prop.', 
+       ok(eq(Object.equals(dst, src) === false
+             && Object.equals(dst, src, {enumerator:Object.keys}) === true)));
+    // filter
+    src = {0:1,__id__:'src'};
+    var filter = function(k){ return k.match(/^__/) };
+    dst = Object.clone(src, true, {filter:filter});
+    it('Object.clone(x, y, {filter:function(){...}})', 
+       ok(eq(Object.equals(dst, src) === false
+             && Object.equals(dst, src, {filter:filter}) === true)));
+    // exception
     try {
         err = '';
         src = new Error;

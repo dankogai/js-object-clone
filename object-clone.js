@@ -81,12 +81,18 @@
         : (x !== x && y !== y); // NaN
     };
     function isnt (x, y) { return !is(x, y) };
-    function equals (x, y) {
+    var defaultCK = {
+        enumerator:getOwnPropertyNames,
+        extensibility:true, 
+        descriptors:true,
+    };
+    function equals (x, y, ck) {
         var vx, vy;
         if (HASWEAKMAP) {
             vx = WeakMap();
             vy = WeakMap();
         }
+        ck = defaults(ck || {}, defaultCK);
         return (function _equals(x, y) {
             if (isPrimitive(x)) return is(x, y);
             if (isFunction(x))  return is(x, y);
@@ -97,9 +103,11 @@
             switch (sx) {
             case '[object Array]':
             case '[object Object]':
-                if (isExtensible(x) !== isExtensible(y)) return false;
-                if (isSealed(x) !== isSealed(y)) return false;
-                if (isFrozen(x) !== isFrozen(y)) return false;
+                if (ck.extensibility) {
+                    if (isExtensible(x) !== isExtensible(y)) return false;
+                    if (isSealed(x) !== isSealed(y)) return false;
+                    if (isFrozen(x) !== isFrozen(y)) return false;
+                }
                 if (vx) {
                     if (vx.has(x)) {
                         // console.log('circular ref found');
@@ -108,8 +116,8 @@
                     vx.set(x, true);
                     vy.set(y, true);
                 }
-                px = getOwnPropertyNames(x),
-                py = getOwnPropertyNames(y);
+                px = ck.enumerator(x);
+                py = ck.enumerator(y);
                 if (px.length != py.length) return false;
                 px.sort(); py.sort();
                 iter: for (i = 0, l = px.length; i < l; ++i) {
@@ -118,11 +126,21 @@
                     if (kx !== ky) return false;
                     dx = getOwnPropertyDescriptor(x, ky);
                     dy = getOwnPropertyDescriptor(y, ky);
-                    if (!_equals(dx.value, dy.value)) return false
-                    delete dx.value;
-                    delete dy.value;
-                    for (dk in dx) {
-                        if (!is(dx[dk], dy[dk])) return false;
+                    if (ck.filter && ck.filter(kx, dx, x)) continue iter;
+                    if ('value' in dx) {
+                        if (!_equals(dx.value, dy.value)) return false;
+                    } else {
+                        if (dx.get && dx.get !== dy.get) return false;
+                        if (dx.set && dx.set !== dy.set) return false;
+                    }
+                    if (ck.descriptors) {
+                        if (dx.enumerable !== dy.enumerable) return false;
+                        if (ck.extensibility) {
+                            if (dx.writable !== dy.writable)
+                                return false;
+                            if (dx.configurable !== dy.configurable)
+                                return false;
+                        }
                     }
                 }
                 return true;
@@ -137,11 +155,12 @@
             }
         })(x, y);
     }
-    function clone(src, deep) {
+    function clone(src, deep, ck) {
         var wm;
         if (deep && HASWEAKMAP) {
             wm = WeakMap();
         }
+        ck = defaults(ck || {}, defaultCK);
         return (function _clone(src) {
             // primitives and functions
             if (isPrimitive(src)) return src;
@@ -159,20 +178,27 @@
                 }
                 var isarray = isArray(src);
                 var dst = isarray ? [] : create(getPrototypeOf(src));
-                getOwnPropertyNames(src).forEach(function(k) {
+                ck.enumerator(src).forEach(function(k) {
                     // Firefox forbids defineProperty(obj, 'length' desc)
                     if (isarray && k === 'length') {
                         dst.length = src.length;
                     } else {
-                        var desc = getOwnPropertyDescriptor(src, k);
-                        if (deep && 'value' in desc) 
-                            desc.value = _clone(src[k]);
-                        defineProperty(dst, k, desc);
+                        if (ck.descriptors) {
+                            var desc = getOwnPropertyDescriptor(src, k);
+                            if (ck.filter && ck.filter(k, desc, src)) return;
+                            if (deep && 'value' in desc) 
+                                desc.value = _clone(src[k]);
+                            defineProperty(dst, k, desc);
+                        } else {
+                            dst[k] = _clone(src[k]);
+                        }
                     }
                 });
-                if (!isExtensible(src)) preventExtensions(dst);
-                if (isSealed(src)) seal(dst);
-                if (isFrozen(src)) freeze(dst);
+                if (ck.extensibility) {
+                    if (!isExtensible(src)) preventExtensions(dst);
+                    if (isSealed(src)) seal(dst);
+                    if (isFrozen(src)) freeze(dst);
+                }
                 return dst;
             case '[object RegExp]':
             case '[object Date]':

@@ -32,12 +32,15 @@ EcmaScript 5 compliance.
 DESCRIPTION
 -----------
 
-This script installs following functions to *Object*.
+This script installs following functions to `Object`.
 
 If the follwing ES6 functions are missing they are polyfilled.
 
 + `Object.is()`
 + `Object.isnt()`
+
+cf. http://wiki.ecmascript.org/doku.php?id=harmony:egal
+
 
 ### Object.clone( _obj_ , _deep_, _spec_ )
 
@@ -186,8 +189,6 @@ Like `[].filter`, the call back function take three arguments
   This is more consistent with array iterators, though.
 + `obj`
   The whole object
-
-See http://wiki.ecmascript.org/doku.php?id=harmony:egal for details.
 
 Circular Reference Support
 --------------------------

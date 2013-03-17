@@ -34,10 +34,12 @@ DESCRIPTION
 
 This script installs following functions to *Object*
 
-### Object.clone( _obj_ , _deep_ )
+### Object.clone( _obj_ , _deep_, _spec_ )
 
 Clones the object _obj_.  When _deep_ is `true`, it attempts to deep
 clone _obj_.
+
+For _spec_, see below.
 
 Unlike many other implementations of object cloners,  This one:
 
@@ -91,7 +93,7 @@ is delegate it to _obj_.cloneNode( _deep_ ) (as a matter of fact my
 early code did support that).  But the author decided to drop that
 since `uneval()` of Firefox does not support that.
 
-### Object.equals( _objX_, _objY_ )
+### Object.equals( _objX_, _objY_, _spec_ )
 
 Compares the _value_ of each property in _objX_ and _objY_ and returns
 `true` iff all properties are equal, otherwise `false`.
@@ -100,6 +102,85 @@ Like `Object.clone()`, `Object.equals()`:
 
 + compares ES5 descriptor
 + compares restriction
+
+### Minute controls via _spec_
+
+Version 0.3.0 introduced the third argument to `Object.clone()` and
+`Object.equals()` which enables more minute control on how objects 
+are compared or cloned.  It is a object with following default.
+
+````javascript
+{
+  descriptors:          true,
+  extensibility:        true,
+  enumerator:           Object.getOwnPropertyNames
+}
+````
+
+#### .descriptor
+
+If `false`, descriptor specs are ignored except for `value`.
+
+````javascript
+src = {};
+defineProperty(src, 0, {value:1});
+dst = Object.clone(src, true, {descriptor:false} );
+log(Object.equals(dst, src)                      ); // false;
+log(Object.equals(dst, src,   {descriptor:false})); // true;
+````
+#### .extensibility
+
+If `false`, extensibility is ignored
+
+````javascript
+src = {};
+Object.freeze(src);
+dst = Object.clone(src, true, {extensibility:false});
+log(Object.equals(dst, src)                        ); // false;
+log(Object.equals(dst, src,   {extensibility:true})); // true;
+````
+
+#### .enumerator
+
+Set the function used to enumurate object.  Change it to `Object.keys`
+and all non-enumerable properties are ignored.
+The example below emulates `_.clone` and `_.isEqual()`:
+
+````javascript
+var spec = {
+  descriptors:          false,
+  extensibility:        false,
+  enumerator:           Object.keys
+};
+if (!_) _ = {};
+_.clone   = function(src) { return Object.clone(src, false, spec) };
+_.isEqual = function(x, y){ return Object.equals(x, y, spec) };
+````
+
+#### .filter
+
+You can even set filter like this:
+
+````javascript
+var ignore__ = function(desc, key, obj) {
+    return !key.match(/^__/);
+};
+src = {0:1, __id__:'src'};
+dst = Object.clone(src, true, {filter:ignore__});
+log(Object.equals(dst, src)                     ); // false;
+log(Object.equals(dst, src,   {filter:ignore__})); // true;
+````
+
+Like `[].filter`, the call back function take three arguments
+
++ `desc` 
+  The _descriptor_ of the value.  Note it is not the value itself
++ `key`
+  The key.  For most cases you need only this.  
+  Should I make this the first argument?
+  This is more consistent with array iterators, though.
++ `obj`
+  The whole object
 
 ### `Object.is()` and `Object.isnt()`
 

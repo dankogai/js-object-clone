@@ -82,9 +82,9 @@
     };
     function isnt (x, y) { return !is(x, y) };
     var defaultCK = {
-        enumerator:getOwnPropertyNames,
-        extensibility:true, 
         descriptors:true,
+        extensibility:true, 
+        enumerator:getOwnPropertyNames
     };
     function equals (x, y, ck) {
         var vx, vy;
@@ -126,7 +126,7 @@
                     if (kx !== ky) return false;
                     dx = getOwnPropertyDescriptor(x, ky);
                     dy = getOwnPropertyDescriptor(y, ky);
-                    if (ck.filter && ck.filter(kx, dx, x)) continue iter;
+                    if (ck.filter && !ck.filter(dx, kx, x)) continue iter;
                     if ('value' in dx) {
                         if (!_equals(dx.value, dy.value)) return false;
                     } else {
@@ -185,7 +185,7 @@
                     } else {
                         if (ck.descriptors) {
                             var desc = getOwnPropertyDescriptor(src, k);
-                            if (ck.filter && ck.filter(k, desc, src)) return;
+                            if (ck.filter && !ck.filter(desc, k, src)) return;
                             if (deep && 'value' in desc) 
                                 desc.value = _clone(src[k]);
                             defineProperty(dst, k, desc);

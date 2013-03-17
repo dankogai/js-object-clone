@@ -92,7 +92,7 @@ describe('Object.equals', function () {
     it('Object.equals(x, y, {filter:function(){...}}) // hidden prop.', 
        ok(eq(Object.equals(x,y) === false
              && Object.equals(x, y, {
-                 filter:function(k){ return k.match(/^__/) }
+                 filter:function(d, k, o){ return !k.match(/^__/) }
                  }) === true)));
 });
 
@@ -184,7 +184,7 @@ describe('Object.clone', function () {
              && Object.equals(dst, src, {enumerator:Object.keys}) === true)));
     // filter
     src = {0:1,__id__:'src'};
-    var filter = function(k){ return k.match(/^__/) };
+    var filter = function(d, k, o){ return !k.match(/^__/) };
     dst = Object.clone(src, true, {filter:filter});
     it('Object.clone(x, y, {filter:function(){...}})', 
        ok(eq(Object.equals(dst, src) === false

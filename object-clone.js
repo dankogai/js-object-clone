@@ -1,5 +1,5 @@
 /*
- * $Id: object-clone.js,v 0.30 2013/03/17 06:58:10 dankogai Exp dankogai $
+ * $Id: object-clone.js,v 0.31 2013/03/19 08:33:46 dankogai Exp dankogai $
  *
  *  Licensed under the MIT license.
  *  http://www.opensource.org/licenses/mit-license.php
@@ -98,7 +98,7 @@
             if (isFunction(x))  return is(x, y);
             // check deeply
             var sx = signatureOf(x), sy = signatureOf(y);
-            var i, l, px, py, sx, sy, kx, ky, dx, dy, dk;
+            var i, l, px, py, sx, sy, kx, ky, dx, dy, dk, flt;
             if (sx !== sy) return false;
             switch (sx) {
             case '[object Array]':
@@ -118,15 +118,22 @@
                 }
                 px = ck.enumerator(x);
                 py = ck.enumerator(y);
+                if (ck.filter) {
+                    flt = function(k) {
+                        var d = getOwnPropertyDescriptor(this, k);
+                        return ck.filter(d, k, this);
+                    };
+                    px = px.filter(flt, x);
+                    py = py.filter(flt, y);
+                }
                 if (px.length != py.length) return false;
                 px.sort(); py.sort();
-                iter: for (i = 0, l = px.length; i < l; ++i) {
+                for (i = 0, l = px.length; i < l; ++i) {
                     kx = px[i];
                     ky = py[i];
                     if (kx !== ky) return false;
                     dx = getOwnPropertyDescriptor(x, ky);
                     dy = getOwnPropertyDescriptor(y, ky);
-                    if (ck.filter && !ck.filter(dx, kx, x)) continue iter;
                     if ('value' in dx) {
                         if (!_equals(dx.value, dy.value)) return false;
                     } else {

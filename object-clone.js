@@ -1,5 +1,5 @@
 /*
- * $Id: object-clone.js,v 0.40 2013/03/27 18:05:37 dankogai Exp dankogai $
+ * $Id: object-clone.js,v 0.41 2013/03/27 18:29:04 dankogai Exp dankogai $
  *
  *  Licensed under the MIT license.
  *  http://www.opensource.org/licenses/mit-license.php
@@ -30,36 +30,13 @@
     isArray = Array.isArray,
     slice = Array.prototype.slice;
     // Utility functions; some exported
-    var extend = function(dst, src) {
-        getOwnPropertyNames(src).forEach(function(k) {
-            defineProperty(
-                dst, k, getOwnPropertyDescriptor(src, k)
-            )
-        });
-        return dst;
-    };
-    var defaults = function(dst, src) {
+    function defaults(dst, src) {
         getOwnPropertyNames(src).forEach(function(k) {
             if (!hasOwnProperty.call(dst, k)) defineProperty(
                 dst, k, getOwnPropertyDescriptor(src, k)
             );
         });
         return dst;
-    };
-    var defspec = extend( 
-        create(null), getOwnPropertyDescriptor(Object, 'freeze')
-    );
-    delete defspec.value;
-    var toSpec = function(v) { 
-        return typeof(v) !== 'function' ? v
-            : extend(extend(create(null), defspec), { value: v });
-    };
-    var defSpecs = function(src) {
-        var specs = create(null);
-        getOwnPropertyNames(src).forEach(function(k) {
-            defineProperty(specs, k, toSpec(src[k]))
-        });
-        return specs;
     };
     var isObject = function(o) { return o === Object(o) };
     var isPrimitive = function(o) { return o !== Object(o) };
@@ -220,7 +197,27 @@
         })(src);
     };
     //  Install
-    (Object.installProperties || defaults)(Object, defSpecs({
+    var obj2specs = function(src) {
+        var specs = create(null);
+        getOwnPropertyNames(src).forEach(function(k) {
+            specs[k] = {
+                value: src[k],
+                configurable: true,
+                writable: true,
+                enumerable: false
+            };
+        });
+        return specs;
+    };
+    var defaultProperties = function(dst, descs) {
+        getOwnPropertyNames(descs).forEach(function(k) {
+            if (!hasOwnProperty.call(dst, k)) defineProperty(
+                dst, k, descs[k]
+            );
+        });
+        return dst;
+    };
+    (Object.installProperties || defaultProperties)(Object, obj2specs({
         clone: clone,
         is: is,
         isnt: isnt,

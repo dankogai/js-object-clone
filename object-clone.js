@@ -1,5 +1,5 @@
 /*
- * $Id: object-clone.js,v 0.31 2013/03/19 08:33:46 dankogai Exp dankogai $
+ * $Id: object-clone.js,v 0.40 2013/03/27 18:05:37 dankogai Exp dankogai $
  *
  *  Licensed under the MIT license.
  *  http://www.opensource.org/licenses/mit-license.php
@@ -12,20 +12,21 @@
         throw Error('ES5 support required');
     }
     // from ES5
-    var create = Object.create,
-    defineProperty = Object.defineProperty,
-    defineProperties = Object.defineProperties,
-    getOwnPropertyNames = Object.getOwnPropertyNames,
-    getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor,
-    getPrototypeOf = Object.getPrototypeOf,
-    freeze = Object.freeze,
-    isFrozen = Object.isFrozen,
-    isSealed = Object.isSealed,
-    seal = Object.seal,
-    isExtensible = Object.isExtensible,
-    preventExtensions = Object.preventExtensions,
-    hasOwnProperty = Object.prototype.hasOwnProperty,
-    toString = Object.prototype.toString,
+    var O = Object, OP = O.prototype,
+    create = O.create,
+    defineProperty = O.defineProperty,
+    defineProperties = O.defineProperties,
+    getOwnPropertyNames = O.getOwnPropertyNames,
+    getOwnPropertyDescriptor = O.getOwnPropertyDescriptor,
+    getPrototypeOf = O.getPrototypeOf,
+    freeze = O.freeze,
+    isFrozen = O.isFrozen,
+    isSealed = O.isSealed,
+    seal = O.seal,
+    isExtensible = O.isExtensible,
+    preventExtensions = O.preventExtensions,
+    hasOwnProperty = OP.hasOwnProperty,
+    toString = OP.toString,
     isArray = Array.isArray,
     slice = Array.prototype.slice;
     // Utility functions; some exported

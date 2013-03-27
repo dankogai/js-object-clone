@@ -218,8 +218,8 @@
             }
         })(src);
     };
-    // Object
-    defaults(Object, defSpecs({
+    //  Install
+    (Object.installProperties || defaults)(Object, defSpecs({
         clone: clone,
         is: is,
         isnt: isnt,

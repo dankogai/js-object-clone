@@ -10,7 +10,7 @@ if (this['window'] !== this) {
 }
 var HASWEAKMAP = (function() { // paranoia check
     try {
-        var wm = WeakMap();
+        var wm = new WeakMap();
         wm.set(wm, wm);
         return wm.get(wm) === wm;
     } catch(e) {
@@ -54,7 +54,7 @@ if (!HASWEAKMAP) {
            ok(Object.isnt(mom, kid)));
         it('Object.equals(mom,kid) // mom[0] = kid, kid[0] = mom', 
            ok(Object.isnt(mom, kid)));
-        mom = Map();
+        mom = new Map();
         mom.set(mom, mom);
         it('Object.isnt(mom,kid)   // mom.set(mom, mom)',
            ok(Object.isnt(mom, kid)));

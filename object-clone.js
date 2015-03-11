@@ -44,7 +44,7 @@
     var signatureOf = function(o) { return toString.call(o) };
     var HASWEAKMAP = (function() { // paranoia check
         try {
-            var wm = WeakMap();
+            var wm = new WeakMap();
             wm.set(wm, wm);
             return wm.get(wm) === wm;
         } catch(e) {
@@ -67,8 +67,8 @@
     function equals (x, y, ck) {
         var vx, vy;
         if (HASWEAKMAP) {
-            vx = WeakMap();
-            vy = WeakMap();
+            vx = new WeakMap();
+            vy = new WeakMap();
         }
         ck = defaults(ck || {}, defaultCK);
         return (function _equals(x, y) {
@@ -143,7 +143,7 @@
     function clone(src, deep, ck) {
         var wm;
         if (deep && HASWEAKMAP) {
-            wm = WeakMap();
+            wm = new WeakMap();
         }
         ck = defaults(ck || {}, defaultCK);
         return (function _clone(src) {

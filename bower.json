@@ -1,0 +1,18 @@
+{
+  "name": "js-object-clone",
+  "version": "0.4.2",
+  "homepage": "https://github.com/dankogai/js-object-clone",
+  "authors": [
+    "Dan Kogai"
+  ],
+  "description": "Deep cloning and comparison for ES5",
+  "main": "object-clone.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "clone",
+    "ES6"
+  ],
+  "license": "BSD"
+}
